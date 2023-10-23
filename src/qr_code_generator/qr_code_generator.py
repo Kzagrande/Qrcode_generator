@@ -2,51 +2,62 @@ import pandas as pd
 import qrcode
 import sys
 import os
+import json
 
-# Caminho para o diretório do projeto
-project_root = "C:\\Users\\casag\\Qrcode_generator"
+project_root = "C:\\Users\\User\\sites\\Qrcode_generator"
+
 sys.path.insert(0, project_root)
 
-# Ler a planilha do Excel
-planilha = pd.read_excel(r"C:\Users\casag\Downloads\hc.xlsx")
-# planilha_10_registros = planilha.head(10)
-# print(planilha_10_registros)
+spreadsheet = pd.read_excel(r"C:\Users\User\Downloads\hc.xlsx")
 
-# Função para criar um código QR e salvar em um arquivo
-def criar_qrcode(texto, nome_arquivo):
+# Function to create a QR code and save it to a file
+def create_qrcode(text, filename):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
         border=4,
     )
-    qr.add_data(texto)
+    qr.add_data(text)
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save(nome_arquivo)
+    img.save(filename)
 
-# Diretório para salvar os códigos QR
+# Directory to save the QR codes
 qr_dir = "src/qrcodes"
-os.makedirs(qr_dir, exist_ok=True)  # Cria o diretório se ele não existir
+os.makedirs(qr_dir, exist_ok=True)  # Create the directory if it doesn't exist
 
-# Iterar sobre as linhas da planilha e criar QR codes
-# Iterar sobre as linhas da planilha e criar QR codes
-for index, linha in planilha.iterrows():
-    numero_matricula = '{:08}'.format(str(linha["ID EMPLOYER"]))  # Formata o número de matrícula com zeros à esquerda
+# Iterate over the spreadsheet rows and create QR codes
+for index, row in spreadsheet.iterrows():
+    employee_id = int(row["ID EMPLOYER"])  # Convert to integer to remove decimal part
+    employee_id = f"{employee_id}_"
+    row_without_employee_id = {
+        "name_": row["NAME"],
+        "admission_date": row["ADMISSION DT"],
+        "company": row["COMPANY"],
+        "work_hours": row["WH"],
+        "business_zone": row["BZ"],
+        "collar": row["COLLAR"],
+        "category": row["CATEGORY"],
+        "sector": row["SECTOR"],
+        "role": row["ROLE"],
+        "shift": row["SHIFT"],
+        "schedule": row["SCHEDULE"],
+        "manager_1": row["MANAGER 1"],
+        "manager_2": row["MANAGER 2"],
+        "manager_3": row["MANAGER 3"],
+        "status": row["STATUS"],
+        "role_2": row["ROLE 2"],
+        "user": row["USER"],
+        "employee_id":employee_id,
+    }
+    employee_name = row["NAME"]
+    # Generate a QR code based on the employee ID
+    row_json = json.dumps(row_without_employee_id)
+    print(row_without_employee_id)
+    print('ROW_JSON', row_json)
+    filename = os.path.join(qr_dir, f"{employee_name}.png")
+    create_qrcode(row_json, filename)
 
-    # Crie uma cópia da linha, excluindo a coluna de número de matrícula
-    linha_sem_matricula = linha.drop("ID EMPLOYER")
-
-    # Transformar a linha em uma string CSV usando vírgulas
-    conteudo_linha = ','.join(map(str, linha_sem_matricula))
-
-    # Gerar um código QR com base no número de matrícula
-    nome_arquivo = os.path.join(qr_dir, f"{numero_matricula}.png")
-    criar_qrcode(conteudo_linha, nome_arquivo)
-
-
-
-
-
-# Agora, você pode ler os QR codes gerados usando uma biblioteca apropriada.
+# Now, you can read the generated QR codes using an appropriate library.
