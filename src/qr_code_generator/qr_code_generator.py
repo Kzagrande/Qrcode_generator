@@ -10,6 +10,7 @@ sys.path.insert(0, project_root)
 
 spreadsheet = pd.read_excel(r"C:\Users\User\Downloads\hc.xlsx")
 
+
 # Function to create a QR code and save it to a file
 def create_qrcode(text, filename):
     qr = qrcode.QRCode(
@@ -24,19 +25,21 @@ def create_qrcode(text, filename):
     img = qr.make_image(fill_color="black", back_color="white")
     img.save(filename)
 
+
 # Directory to save the QR codes
 qr_dir = "src/qrcodes"
 os.makedirs(qr_dir, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Iterate over the spreadsheet rows and create QR codes
 for index, row in spreadsheet.iterrows():
-    employee_id = int(row["ID EMPLOYER"])  # Convert to integer to remove decimal part
-    employee_id = f"{employee_id}_"
+    # employee_id = int(row["ID EMPLOYER"])  # Convert to integer to remove decimal part
+    # employee_id = f"{employee_id}_"
     row_without_employee_id = {
+        "employee_id": row["ID EMPLOYER"],
         "name_": row["NAME"],
         "admission_date": row["ADMISSION DT"],
         "company": row["COMPANY"],
-        "work_hours": row["WH"],
+        "warehouse": row["WH"],
         "business_zone": row["BZ"],
         "collar": row["COLLAR"],
         "category": row["CATEGORY"],
@@ -45,18 +48,19 @@ for index, row in spreadsheet.iterrows():
         "shift": row["SHIFT"],
         "schedule": row["SCHEDULE"],
         "manager_1": row["MANAGER 1"],
-        "manager_2": row["MANAGER 2"],
-        "manager_3": row["MANAGER 3"],
         "status": row["STATUS"],
         "role_2": row["ROLE 2"],
         "user": row["USER"],
-        "employee_id":employee_id,
     }
+    id_employer = int(row_without_employee_id["employee_id"])
+    new_id = f"ID{id_employer}"
+    row_without_employee_id["employee_id"] = new_id
+
     employee_name = row["NAME"]
     # Generate a QR code based on the employee ID
     row_json = json.dumps(row_without_employee_id)
     print(row_without_employee_id)
-    print('ROW_JSON', row_json)
+    print("ROW_JSON", row_json)
     filename = os.path.join(qr_dir, f"{employee_name}.png")
     create_qrcode(row_json, filename)
 
