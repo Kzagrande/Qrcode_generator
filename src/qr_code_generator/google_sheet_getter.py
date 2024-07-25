@@ -9,7 +9,7 @@ from src.interfaces.google_sheet_getter import GoogleSheetGetterInterface
 
 class GoogleSheetGetter(GoogleSheetGetterInterface):
     def __init__(self):
-        self.spreadsheet_id = "1BPJqdN2d_wTtJBktzWEtir0L1HkxMpGjTHqnSox7-c0"
+        self.spreadsheet_id = ""
 
     def get_sheet(self) -> str:  # Alterado o tipo de retorno para uma string
         excel_file = ""  # Inicialize a variável excel_file fora do bloco try
