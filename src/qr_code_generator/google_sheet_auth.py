@@ -12,10 +12,11 @@ from src.interfaces.google_sheet_auth import GoogleSheetAuthInterface
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-class GoogleSheetAuth(GoogleSheetAuthInterface):
+class GoogleSheetAuth(GoogleSheetAuthInterface): 
     def __init__(self):
         # Define um metodo construtor que sempre que classe for chamada já executa o metodo get_service() que por sua vez retora o _get_setvice, privado.
         self.service = self._get_service()
+        #"teste"
 
     def _get_service(self):
         creds = None
